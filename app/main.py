@@ -63,16 +63,21 @@ async def limpiar_env(data: Content):
 
 def convertir(content: str) -> str:
     result = []
+    content2 = content.replace("            ","")
     try:
-        for line in content.split('\n- '):
+        for line in content2.split('\n- '):
             if line.strip():
                 parts = line.split(":")
                 name = parts[1].split('value')[0].strip()
                 value = parts[2].strip().strip('"')
+                if value=='http':
+                    value = value + ':' + parts[3].strip().strip('"')
+                    if parts[4]:
+                        value = value + ':' + parts[4].strip().strip('"')
                 result.append(f"{name}={value}")
     except Exception as e:
         return 'No pude convertir tu texto a variables de entorno :c'
-    return '\n'.join(result)
+    return limpiar('\n'.join(result))
 
 @app.post("/api/v1.0.0/convertir_env")
 async def convertir_env(data: Content):
