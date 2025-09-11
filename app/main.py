@@ -52,6 +52,7 @@ def limpiar(content: str) -> str:
                 line = line.replace('"', '') 
                 result.append(line)
     except Exception as e:
+        print(e)
         return 'No pude formatear tu texto :c'         
     return '\n'.join(result)
 
@@ -68,14 +69,17 @@ def convertir(content: str) -> str:
         for line in content2.split('\n- '):
             if line.strip():
                 parts = line.split(":")
-                name = parts[1].split('value')[0].strip()
-                value = parts[2].strip().strip('"')
-                if value=='http':
-                    value = value + ':' + parts[3].strip().strip('"')
-                    if parts[4]:
-                        value = value + ':' + parts[4].strip().strip('"')
-                result.append(f"{name}={value}")
+                if len(parts) > 2:
+                    name = parts[1].split('value')[0].strip()
+                    value = parts[2].strip().strip('"')
+                    if value == 'http' or 'mongodb+srv' in value:
+                        if len(parts) > 3:
+                            value = value + ':' + parts[3].strip().strip('"')
+                            if len(parts) > 4:
+                                value = value + ':' + parts[4].strip().strip('"')
+                    result.append(f"{name}={value}")
     except Exception as e:
+        print(e)
         return 'No pude convertir tu texto a variables de entorno :c'
     return limpiar('\n'.join(result))
 
